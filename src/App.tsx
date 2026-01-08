@@ -5,6 +5,7 @@ import {
   Button,
   Card,
   CardHeader,
+  colors,
   Container,
   Divider,
   FormControl,
@@ -39,11 +40,11 @@ import EditIcon from '@mui/icons-material/Edit';
 ===================== */
 
 const CATEGORIES: Category[] = [
-  { key: "food", label: "Food", color: "red" },
-  { key: "transport", label: "Transport", color: "darkblue" },
-  { key: "entertainment", label: "Entertainment", color: "purple" },
-  { key: "travel", label: "Travel", color: "green" },
-  { key: "other", label: "Other", color: "black" },
+  { key: "food", label: "Food", color: "#F5AD27" },
+  { key: "transport", label: "Transport", color: "#ED2D8A" },
+  { key: "entertainment", label: "Entertainment", color: "#F56827" },
+  { key: "travel", label: "Travel", color: "#F53C27" },
+  { key: "other", label: "Other", color: "#27BEF5" },
 ];
 
 export default function App(): JSX.Element {
@@ -249,7 +250,7 @@ export default function App(): JSX.Element {
         {/* Summary Bar */}
         <Box sx={{ px: 2, py: 1 }}>
           <Grid container spacing={2} alignItems="center">
-            <Grid item xs={12} md={8}>
+            {/* <Grid item xs={12} md={8}>
               <Box
                 role="img"
                 aria-label="Expense distribution bar"
@@ -263,21 +264,31 @@ export default function App(): JSX.Element {
               >
                 {CATEGORIES.map((c) => renderBarSegment(c.key))}
               </Box>
-            </Grid>
+            </Grid> */}
 
-            <Grid item xs={12} md={4}>
+            <Grid item xs={12} md={12}>
               <Stack spacing={1}>
                 <Typography variant="h6">Expense Summary</Typography>
-                {CATEGORIES.map((c) => (
-                  <Stack key={c.key} direction="row" spacing={1} alignItems="center">
-                    <Box sx={{ width: 20, height: 20, bgcolor: c.color }} />
-                    <Typography variant="body2">
-                      {c.label}: {percentages[c.key]}%
-                      {totalsByType[c.key] > 0 &&
-                        ` ($${totalsByType[c.key].toFixed(2)})`}
-                    </Typography>
-                  </Stack>
-                ))}
+                <Card>
+                  {CATEGORIES.map((c) => (
+                    <Box flex={1} flexDirection="row" key={c.key} display="flex" padding={'2px'} width="100%">
+                      {Number(percentages[c.key]) > 0 &&
+                        <>
+                          <Box bgcolor={c.color} color="#fff" fontWeight={'bold'}>${c.label}</Box>
+                          <Box sx={{ width: `${percentages[c.key]}%`, height: 20, bgcolor: c.color, color: '#fff', textAlign: 'center', fontWeight:'bold' }}> 
+                            <Typography variant="body2" fontWeight={'bold'}>
+                              {totalsByType[c.key] > 0 &&
+                              `$${totalsByType[c.key].toFixed(2)}`}
+                            </Typography>
+                          </Box>
+                          <Typography variant="body2" fontWeight={'bold'}>
+                          {`${percentages[c.key]}%`}
+                          </Typography>
+                        </>
+                        }
+                    </Box>
+                  ))}
+                </Card>
               </Stack>
             </Grid>
           </Grid>
@@ -288,7 +299,7 @@ export default function App(): JSX.Element {
         {/* Form + Table */}
         <Grid container spacing={2} sx={{ px: 2, py: 2 }}>
           {/* Form */}
-          <Grid item xs={12} md={5} lg={4}>
+          <Grid item xs={12} md={4} lg={3}>
             <Card variant="outlined" sx={{ p: 2 }}>
               <Stack spacing={2}>
                 <TextField
@@ -348,7 +359,7 @@ export default function App(): JSX.Element {
           </Grid>
 
           {/* Table */}
-          <Grid item xs={12} md={7} lg={8}>
+          <Grid item xs={12} md={8} lg={9}>
             <Card
               variant="outlined"
               sx={{
