@@ -15,3 +15,10 @@ if (rootElement) {
 } else {
   console.error('Root element not found');
 }
+
+ServiceWorkerRegistration.register({
+  onUpdate: () => {
+    alert('New version available. Please refresh.')
+  }
+})
+
