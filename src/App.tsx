@@ -26,23 +26,11 @@ import {
   Typography,
 } from "@mui/material";
 import { Stores, User, addData, deleteData, getData, getStoreData, initDB, updateData } from './db/db';
-import { Category, CategoryKey, Expense } from "./global";
+import { CATEGORIES, Category, CategoryKey, Expense } from "./global";
 import moment from "moment";
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import { v4 as uuidv4 } from 'uuid';
-
-/* =====================
-   Config
-===================== */
-
-const CATEGORIES: Category[] = [
-  { key: "food", label: "Food", color: "#F5AD27" },
-  { key: "transport", label: "Transport", color: "#ED2D8A" },
-  { key: "entertainment", label: "Entertainment", color: "#F56827" },
-  { key: "travel", label: "Travel", color: "#F53C27" },
-  { key: "other", label: "Other", color: "#27BEF5" },
-];
 
 export default function App(): JSX.Element {
   /* =====================
@@ -96,7 +84,7 @@ export default function App(): JSX.Element {
         total += exp.amount;
         totals[exp?.expenseType] += exp?.amount;
       });
-      setDateWiseTotalExpense((prev) => ({...prev, [_dateKey]: total}));
+      setDateWiseTotalExpense((prev) => ({ ...prev, [_dateKey]: total }));
     });
 
     const pct: Record<CategoryKey, string> = {
@@ -238,41 +226,26 @@ export default function App(): JSX.Element {
   var currentDate = moment();
 
   return (
-    <Container maxWidth="lg" sx={{ p: 0}} >
+    <Container maxWidth="lg" sx={{ p: 0 }} >
       <Card sx={{ bgcolor: '#f5f5f8' }}>
         <CardHeader
           title="My Expense Tracker"
-          subheader={
-            <Box>
-              {`${currentDate.format('MMMM')}, ${currentDate.format('YYYY')}`}
-              {/* <Typography variant="body2" sx={{ fontWeight: 'bold', textAlign: 'right' }}>
-
-                {totalAmount > 0
-                  ? `Total: $${totalAmount?.toFixed(2)}`
-                  : "Add your first expense"}
-              </Typography> */}
-            </Box>
-          }
-          subheaderTypographyProps={{
-            fontWeight: 'bold', // Set the font weight to bold
-            textAlign: 'right'
-          }}
           sx={{
-            background: 'linear-gradient(to right, #890044ff, #82ffa1)',
+            background: 'linear-gradient(to right, #890044ff, #82ff)',
             color: 'white', // Ensure text is readable
-
+            textAlign: 'center'
           }}
         />
         <Divider />
 
         <Box sx={{ px: 2, py: 1, alignItems: 'center', xs: 12, md: 12 }}>
           <Stack spacing={1}>
-            <Typography variant="h6">Expense Summary</Typography>
+            <Typography variant="h6">{`Expense Summary: ${currentDate.format('MMMM')}, ${currentDate.format('YYYY')}`}</Typography>
             <Card>
               {CATEGORIES.map((c) => (
-                <Box flex={1} flexDirection="row" key={c.key} display="flex" padding={'2px'} width="100%">
+                <>
                   {Number(percentages[c.key]) > 0 &&
-                    <>
+                    <Box flex={1} flexDirection="row" key={c.key} display="flex" padding={'2px'} width="100%">
                       <Box bgcolor={c.color} color="#fff">{c.label}</Box>
                       <Box sx={{ width: `${Number(percentages[c.key]) + 1}%`, height: 20, bgcolor: c.color, color: '#fff', textAlign: 'center' }}>
                         <Typography variant="body2" ml={0.5}>
@@ -283,9 +256,9 @@ export default function App(): JSX.Element {
                       <Typography variant="body2">
                         {`${percentages[c.key]}%`}
                       </Typography>
-                    </>
+                    </Box>
                   }
-                </Box>
+                </>
               ))}
             </Card>
           </Stack>
@@ -293,7 +266,7 @@ export default function App(): JSX.Element {
 
         <Divider />
 
-        <Grid container spacing={2} sx={{ px: 2, py: 2 }}>
+        <Grid container spacing={2} sx={{ p: 2 }}>
           <Grid item xs={12} md={4} lg={3} spacing={2}>
             <Stack spacing={2}>
               <TextField
@@ -351,69 +324,70 @@ export default function App(): JSX.Element {
             </Stack>
           </Grid>
           <Divider />
-          <Grid item xs={12} md={8} lg={9}>
-            <Box display="flex" justifyContent="space-between" alignItems="center">
-            <Typography variant="h6">
-              {`Expenses`}
-            </Typography>
-            <Typography variant="h6">
-              {`Total: $${totalAmount.toFixed(2)}`}
-            </Typography>
+          <Grid item xs={12} md={8} lg={9} bgcolor="beiage" maxHeight={"70vh"}>
+            <Box display="flex" justifyContent="space-between" alignItems="center" sx={{ background: 'linear-gradient(to right, #890044ff, #82ff)', color: 'white'}}>
+              <Typography variant="h6">
+                {`Expenses`}
+              </Typography>
+              <Typography variant="h6">
+                {`Total: $${totalAmount.toFixed(2)}`}
+              </Typography>
             </Box>
-            {expenses.map(({ key: dateKey, value: expensesOnDate }) => (
-              <Card key={dateKey} sx={{ mb: 2 }}>
-                <Box
-                  sx={{
-                    display: 'flex',
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    p: 1,
-                    bgcolor: colors.grey[400],
-                  }}
-                >
-                  <Typography variant="body2" fontWeight="bold">
-                    {moment(dateKey, 'MM-DD-YYYY').format('DD/MMM/YYYY')}
-                  </Typography>
-                  <Typography variant="body2" fontWeight="bold">
-                    {`$${(() => {const sum = expensesOnDate.reduce((sum: any, exp: any) => sum + exp.amount, 0).toFixed(2); return sum;})()}`}
-                  </Typography>
-                </Box>
-                <TableContainer component={Paper}>
-                  <Table stickyHeader size="small" width="100%">
-                    <TableBody>
-                      {expensesOnDate.map((expense: any) => (
-                        <TableRow key={expense.id}>
-                          <TableCell sx={{p: 0.5, width: '40%'}}>{expense?.expenseName}</TableCell>
-                          <TableCell sx={{p: 0.5, width: '20%', textAlign: 'right'}}>
-                            ${expense?.amount?.toFixed(2)}
-                          </TableCell>
-                          <TableCell sx={{ textTransform: 'capitalize', width: '30%', p: 0.5 }}>
-                            {expense?.expenseType}
-                          </TableCell>
-                          <TableCell
-                            sx={{
-                              width: '10%',
-                              textAlign: 'right',
-                              p: 0.5
-                            }}
-                          >
-                            {/* <EditIcon
-                              sx={{ cursor: 'pointer' }}
-                              onClick={() => handleEditExpense(expense.id)}
-                            /> */}
-                            <DeleteIcon
-                              sx={{ cursor: 'pointer' }}
-                              onClick={() => handleRemove(expense.id)}
-                            />
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </TableContainer>
-              </Card>
-            ))}
-
+            <Box sx={{ maxHeight: '55vh', overflowY: 'auto'}}>
+              {expenses.map(({ key: dateKey, value: expensesOnDate }) => (
+                <Card key={dateKey} sx={{ mb: 1}}>
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      flexDirection: 'row',
+                      justifyContent: 'space-between',
+                      p: 1,
+                      bgcolor: colors.grey[400],
+                    }}
+                  >
+                    <Typography variant="body2" fontWeight="bold">
+                      {moment(dateKey, 'MM-DD-YYYY').format('DD/MMM/YYYY')}
+                    </Typography>
+                    <Typography variant="body2" fontWeight="bold">
+                      {`$${(() => { const sum = expensesOnDate.reduce((sum: any, exp: any) => sum + exp.amount, 0).toFixed(2); return sum; })()}`}
+                    </Typography>
+                  </Box>
+                  <TableContainer component={Paper}>
+                    <Table stickyHeader size="small" width="100%">
+                      <TableBody>
+                        {expensesOnDate.map((expense: any) => (
+                          <TableRow key={expense.id}>
+                            <TableCell sx={{ p: 0.5, width: '40%' }}>{expense?.expenseName}</TableCell>
+                            <TableCell sx={{ p: 0.5, width: '20%', textAlign: 'right' }}>
+                              ${expense?.amount?.toFixed(2)}
+                            </TableCell>
+                            <TableCell sx={{ textTransform: 'capitalize', width: '30%', p: 0.5 }}>
+                              {expense?.expenseType}
+                            </TableCell>
+                            <TableCell
+                              sx={{
+                                width: '10%',
+                                textAlign: 'right',
+                                p: 0.5
+                              }}
+                            >
+                              {/* <EditIcon
+                                sx={{ cursor: 'pointer' }}
+                                onClick={() => handleEditExpense(expense.id)}
+                              /> */}
+                              <DeleteIcon
+                                sx={{ cursor: 'pointer' }}
+                                onClick={() => handleRemove(expense.id)}
+                              />
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                </Card>
+              ))}
+            </Box>
           </Grid>
         </Grid>
       </Card>

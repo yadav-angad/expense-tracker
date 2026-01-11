@@ -19,10 +19,30 @@ export interface GroupedExpenses {
     value: Expense[];
 }
 
-export const categories: Category[] = [
-    { key: "food", label: "Food", color: "#f44336" },
-    { key: "transport", label: "Transport", color: "#2196f3" },
-    { key: "entertainment", label: "Entertainment", color: "#ff9800" },
-    { key: "travel", label: "Travel", color: "#4caf50" },
-    { key: "other", label: "Other", color: "#9c27b0" },
+export const CATEGORIES: Category[] = [
+  {
+    key: "food",
+    label: "Food",
+    color: "#FF9800", // Orange → appetite, meals
+  },
+  {
+    key: "transport",
+    label: "Transport",
+    color: "#2196F3", // Blue → movement, travel, trust
+  },
+  {
+    key: "entertainment",
+    label: "Entertainment",
+    color: "#9C27B0", // Purple → fun, leisure, creativity
+  },
+  {
+    key: "travel",
+    label: "Travel",
+    color: "#4CAF50", // Green → nature, trips, outdoors
+  },
+  {
+    key: "other",
+    label: "Other",
+    color: "#9E9E9E", // Grey → neutral / uncategorized
+  },
 ];
