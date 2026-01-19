@@ -31,6 +31,7 @@ import moment from "moment";
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import { v4 as uuidv4 } from 'uuid';
+import ExportCSV from "./ExportCSV";
 
 export default function App(): JSX.Element {
   /* =====================
@@ -79,8 +80,7 @@ export default function App(): JSX.Element {
     let total = 0;
 
     expenses.map(({ _key: _dateKey, value: expensesOnDate }) => {
-      expensesOnDate.forEach((exp: Expense) => {
-        console.log('Calculating totals for expense:', exp);
+      expensesOnDate?.forEach((exp: Expense) => {
         total += exp.amount;
         totals[exp?.expenseType] += exp?.amount;
       });
@@ -204,19 +204,18 @@ export default function App(): JSX.Element {
   }
 
   const handleGetExpenses = async () => {
-    const expenses = await getStoreData<Expense[]>(Stores.Expenses);
-    console.log('Fetched expenses:', expenses);
-    expenses.forEach(({ key: dateKey, value: expensesOnDate }) => {
-      console.log('Date:', dateKey);
+    const expenses = await getStoreData<
+      { key: string; value: Expense[] }[]
+    >(Stores.Expenses);
 
-      expensesOnDate.forEach((expense) => {
-        console.log('  Expense:', expense.expenseName);
-        console.log('  Amount:', expense.amount);
-        console.log('  Type:', expense.expenseType);
-      });
+    const sortedExpenses = expenses.sort((a, b) => {
+      const dateA = new Date(a.key);
+      const dateB = new Date(b.key);
+      return dateB.getTime() - dateA.getTime(); // DESC
     });
 
-    setExpenses(expenses);
+    setExpenses(sortedExpenses as any);
+
   };
 
   /* =====================
@@ -229,7 +228,7 @@ export default function App(): JSX.Element {
     <Container maxWidth="lg" sx={{ p: 0 }} >
       <Card sx={{ bgcolor: '#f5f5f8' }}>
         <CardHeader
-          title="My Expense Tracker"
+          title="Expense Tracker"
           sx={{
             background: 'linear-gradient(to right, #890044ff, #82ff)',
             color: 'white', // Ensure text is readable
@@ -267,7 +266,7 @@ export default function App(): JSX.Element {
         <Divider />
 
         <Grid container spacing={2} sx={{ p: 2 }}>
-          <Grid item xs={12} md={4} lg={3} spacing={2}>
+          <Grid item xs={12} md={4} lg={3}>
             <Stack spacing={2}>
               <TextField
                 label="Expense name"
@@ -325,17 +324,18 @@ export default function App(): JSX.Element {
           </Grid>
           <Divider />
           <Grid item xs={12} md={8} lg={9} bgcolor="beiage" maxHeight={"70vh"}>
-            <Box display="flex" justifyContent="space-between" alignItems="center" sx={{ background: 'linear-gradient(to right, #890044ff, #82ff)', color: 'white'}}>
+            <Box pl={1} pr={1} display="flex" justifyContent="space-between" alignItems="center" sx={{ background: 'linear-gradient(to right, #890044ff, #82ff)', color: 'white' }}>
               <Typography variant="h6">
                 {`Expenses`}
               </Typography>
+              <ExportCSV data={expenses} fileName={`expenses_${currentDate.format('MM_DD_YYYY')}.csv`} />
               <Typography variant="h6">
                 {`Total: $${totalAmount.toFixed(2)}`}
               </Typography>
             </Box>
-            <Box sx={{ maxHeight: '55vh', overflowY: 'auto'}}>
-              {expenses.map(({ key: dateKey, value: expensesOnDate }) => (
-                <Card key={dateKey} sx={{ mb: 1}}>
+            <Box sx={{ maxHeight: '55vh', overflowY: 'auto' }}>
+              {expenses?.map(({ key: dateKey, value: expensesOnDate }) => (
+                <Card key={dateKey} sx={{ mb: 1 }}>
                   <Box
                     sx={{
                       display: 'flex',
@@ -346,16 +346,16 @@ export default function App(): JSX.Element {
                     }}
                   >
                     <Typography variant="body2" fontWeight="bold">
-                      {moment(dateKey, 'MM-DD-YYYY').format('DD/MMM/YYYY')}
+                      {moment(dateKey, 'MM-DD-YYYY').format('MM-DD-YYYY')}
                     </Typography>
                     <Typography variant="body2" fontWeight="bold">
-                      {`$${(() => { const sum = expensesOnDate.reduce((sum: any, exp: any) => sum + exp.amount, 0).toFixed(2); return sum; })()}`}
+                      {`$${(() => { const sum = expensesOnDate?.reduce((sum: any, exp: any) => sum + exp.amount, 0).toFixed(2); return sum; })()}`}
                     </Typography>
                   </Box>
                   <TableContainer component={Paper}>
                     <Table stickyHeader size="small" width="100%">
                       <TableBody>
-                        {expensesOnDate.map((expense: any) => (
+                        {expensesOnDate?.map((expense: any) => (
                           <TableRow key={expense.id}>
                             <TableCell sx={{ p: 0.5, width: '40%' }}>{expense?.expenseName}</TableCell>
                             <TableCell sx={{ p: 0.5, width: '20%', textAlign: 'right' }}>
