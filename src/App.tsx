@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import "./App.css";
 import {
+  Accordion,
+  AccordionDetails,
   Box,
   Button,
   Card,
@@ -24,7 +26,9 @@ import {
   TableRow,
   TextField,
   Typography,
+  AccordionSummary
 } from "@mui/material";
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { Stores, User, addData, deleteData, getData, getStoreData, initDB, updateData } from './db/db';
 import { CATEGORIES, Category, CategoryKey, Expense } from "./global";
 import moment from "moment";
@@ -334,59 +338,93 @@ export default function App(): JSX.Element {
               </Typography>
             </Box>
             <Box sx={{ maxHeight: '55vh', overflowY: 'auto' }}>
-              {expenses?.map(({ key: dateKey, value: expensesOnDate }) => (
-                <Card key={dateKey} sx={{ mb: 1 }}>
-                  <Box
-                    sx={{
-                      display: 'flex',
-                      flexDirection: 'row',
-                      justifyContent: 'space-between',
-                      p: 1,
-                      bgcolor: colors.grey[400],
-                    }}
-                  >
-                    <Typography variant="body2" fontWeight="bold">
-                      {moment(dateKey, 'MM-DD-YYYY').format('MM-DD-YYYY')}
-                    </Typography>
-                    <Typography variant="body2" fontWeight="bold">
-                      {`$${(() => { const sum = expensesOnDate?.reduce((sum: any, exp: any) => sum + exp.amount, 0).toFixed(2); return sum; })()}`}
-                    </Typography>
-                  </Box>
-                  <TableContainer component={Paper}>
-                    <Table stickyHeader size="small" width="100%">
-                      <TableBody>
-                        {expensesOnDate?.map((expense: any) => (
-                          <TableRow key={expense.id}>
-                            <TableCell sx={{ p: 0.5, width: '40%' }}>{expense?.expenseName}</TableCell>
-                            <TableCell sx={{ p: 0.5, width: '20%', textAlign: 'right' }}>
-                              ${expense?.amount?.toFixed(2)}
-                            </TableCell>
-                            <TableCell sx={{ textTransform: 'capitalize', width: '30%', p: 0.5 }}>
-                              {expense?.expenseType}
-                            </TableCell>
-                            <TableCell
-                              sx={{
-                                width: '10%',
-                                textAlign: 'right',
-                                p: 0.5
-                              }}
-                            >
-                              {/* <EditIcon
-                                sx={{ cursor: 'pointer' }}
-                                onClick={() => handleEditExpense(expense.id)}
-                              /> */}
-                              <DeleteIcon
-                                sx={{ cursor: 'pointer' }}
-                                onClick={() => handleRemove(expense.id)}
-                              />
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </TableContainer>
-                </Card>
-              ))}
+              {expenses?.map(({ key: dateKey, value: expensesOnDate }) => {
+                const dayTotal = expensesOnDate?.reduce(
+                  (sum: number, exp: any) => sum + exp.amount,
+                  0
+                );
+
+                return (
+                  <Accordion key={dateKey} sx={{ mb: 1 }}>
+                    <AccordionSummary
+                      expandIcon={<ExpandMoreIcon />}
+                      sx={{
+                        minHeight: 30,
+                        '&.Mui-expanded': {
+                          minHeight: 30,
+                        },
+                        '& .MuiAccordionSummary-content': {
+                          margin: 0,
+                        },
+                        '&.Mui-expanded .MuiAccordionSummary-content': {
+                          margin: 0,
+                        },
+                        backgroundColor: colors.grey[400],
+                      }}
+                    >
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          width: '100%',
+                        }}
+                      >
+                        <Typography variant="body2" fontWeight="bold">
+                          {moment(dateKey, 'MM-DD-YYYY').format('MMM, DD YYYY')}
+                        </Typography>
+                        <Typography variant="body2" fontWeight="bold">
+                          ${dayTotal.toFixed(2)}
+                        </Typography>
+                      </Box>
+                    </AccordionSummary>
+
+                    <AccordionDetails sx={{ p: 0 }}>
+                      <TableContainer component={Paper}>
+                        <Table stickyHeader size="small" sx={{ width: '100%' }}>
+                          <TableBody>
+                            {expensesOnDate?.map((expense: any) => (
+                              <TableRow key={expense.id}>
+                                <TableCell sx={{ p: 0.5, width: '40%' }}>
+                                  {expense.expenseName}
+                                </TableCell>
+
+                                <TableCell
+                                  sx={{
+                                    textTransform: 'capitalize',
+                                    width: '30%',
+                                    p: 0.5,
+                                  }}
+                                >
+                                  {expense.expenseType}
+                                </TableCell>
+
+                                <TableCell
+                                  sx={{ p: 0.5, width: '25%', textAlign: 'right' }}
+                                >
+                                  ${expense.amount.toFixed(2)}
+                                </TableCell>
+
+                                <TableCell
+                                  sx={{
+                                    width: '5%',
+                                    textAlign: 'right',
+                                    p: 0.5,
+                                  }}
+                                >
+                                  <DeleteIcon
+                                    sx={{ cursor: 'pointer' }}
+                                    onClick={() => handleRemove(expense.id)}
+                                  />
+                                </TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      </TableContainer>
+                    </AccordionDetails>
+                  </Accordion>
+                );
+              })}
             </Box>
           </Grid>
         </Grid>
