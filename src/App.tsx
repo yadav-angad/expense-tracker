@@ -100,7 +100,7 @@ export default function App(): JSX.Element {
     };
 
     (Object.keys(totals) as CategoryKey[]).forEach((key) => {
-      pct[key] = total > 0 ? ((totals[key] / total) * 100)?.toFixed(2) : "0.00";
+      pct[key] = total > 0 ? Math.round((totals[key] / total) * 100).toString() : "0";
     });
 
     return {
@@ -249,7 +249,7 @@ export default function App(): JSX.Element {
                 <>
                   {Number(percentages[c.key]) > 0 &&
                     <Box flex={1} flexDirection="row" key={c.key} display="flex" padding={'2px'} width="100%">
-                      <Box bgcolor={c.color} color="#fff">{c.label}</Box>
+                      <Box sx={{width: '25%'}} bgcolor={c.color} color="#fff">{c.label}</Box>
                       <Box sx={{ width: `${Number(percentages[c.key]) + 1}%`, height: 20, bgcolor: c.color, color: '#fff', textAlign: 'center' }}>
                         <Typography variant="body2" ml={0.5}>
                           {totalsByType[c.key] > 0 &&
