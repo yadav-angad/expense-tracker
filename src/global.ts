@@ -1,4 +1,4 @@
-export type CategoryKey = "food" | "transport" | "entertainment" | "travel" | "other";
+export type CategoryKey = "food" | "utilities" | "shopping" | "travel" | "other";
 
 export interface Category {
     key: CategoryKey;
@@ -26,13 +26,13 @@ export const CATEGORIES: Category[] = [
     color: "#FF9800", // Orange → appetite, meals
   },
   {
-    key: "transport",
-    label: "Transport",
+    key: "utilities",
+    label: "Utilities",
     color: "#2196F3", // Blue → movement, travel, trust
   },
   {
-    key: "entertainment",
-    label: "Entertainment",
+    key: "shopping",
+    label: "Shopping",
     color: "#9C27B0", // Purple → fun, leisure, creativity
   },
   {

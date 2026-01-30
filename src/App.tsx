@@ -75,8 +75,8 @@ export default function App(): JSX.Element {
   const { totalsByType, totalAmount, percentages } = React.useMemo(() => {
     const totals: Record<CategoryKey, number> = {
       food: 0,
-      transport: 0,
-      entertainment: 0,
+      utilities: 0,
+      shopping: 0,
       travel: 0,
       other: 0,
     };
@@ -93,8 +93,8 @@ export default function App(): JSX.Element {
 
     const pct: Record<CategoryKey, string> = {
       food: "0.00",
-      transport: "0.00",
-      entertainment: "0.00",
+      utilities: "0.00",
+      shopping: "0.00",
       travel: "0.00",
       other: "0.00",
     };
